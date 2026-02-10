@@ -12,7 +12,6 @@ export async function POST(request: Request) {
       destination_longitude,
       ride_time,
       fare_price,
-      payment_status,
       driver_id,
       user_id,
     } = body;
@@ -26,7 +25,6 @@ export async function POST(request: Request) {
       !destination_longitude ||
       !ride_time ||
       !fare_price ||
-      !payment_status ||
       !driver_id ||
       !user_id
     ) {
@@ -48,9 +46,9 @@ export async function POST(request: Request) {
           destination_longitude, 
           ride_time, 
           fare_price, 
-          payment_status, 
           driver_id, 
-          user_id
+          user_id,
+          status
       ) VALUES (
           ${origin_address},
           ${destination_address},
@@ -60,9 +58,9 @@ export async function POST(request: Request) {
           ${destination_longitude},
           ${ride_time},
           ${fare_price},
-          ${payment_status},
           ${driver_id},
-          ${user_id}
+          ${user_id},
+          'pending'
       )
       RETURNING *;
     `;
