@@ -7,7 +7,6 @@ import { ReactNativeModal } from "react-native-modal";
 
 import CustomButton from "@/components/CustomButton";
 import { images } from "@/constants";
-import { fetchAPI } from "@/lib/fetch";
 import { useLocationStore } from "@/store";
 import { PaymentProps } from "@/types/type";
 
@@ -32,23 +31,16 @@ const Payment = ({
 
   const createRazorpayOrder = async () => {
     try {
-      const response = await fetchAPI("/(api)/(razorpay)/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: amount,
-          currency: "INR", // Assuming INR, change if needed
-        }),
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return response.order;
+      // Mock order creation since backend is removed
+      // In production, this would call your backend API
+      const mockOrder = {
+        id: `order_${Date.now()}`,
+        amount: Math.round(parseFloat(String(amount)) * 100), // Razorpay uses smallest currency unit
+        currency: "INR",
+      };
+      return mockOrder;
     } catch (error) {
-      console.error("Error creating Razorpay order:", error);
+      console.error("Error creating payment order:", error);
       Alert.alert("Payment Error", "Could not create payment order.");
       return null;
     }
@@ -60,24 +52,12 @@ const Payment = ({
     razorpay_signature: string,
   ) => {
     try {
-      const response = await fetchAPI("/(api)/(razorpay)/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          razorpay_payment_id,
-          razorpay_order_id,
-          razorpay_signature,
-        }),
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return response.success;
+      // Mock verification since backend is removed
+      // In production, this would verify the payment signature with your backend
+      console.log("Payment verified (mock):", { razorpay_payment_id, razorpay_order_id });
+      return true;
     } catch (error) {
-      console.error("Error verifying Razorpay payment:", error);
+      console.error("Error verifying payment:", error);
       Alert.alert("Payment Error", "Could not verify payment.");
       return false;
     }
@@ -113,26 +93,21 @@ const Payment = ({
         );
 
         if (isVerified) {
-          await fetchAPI("/(api)/ride/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+          try {
+            // Mock ride creation - no backend to store to
+            // In production, this would save to your database
+            console.log("Ride booking details (frontend-only):", {
               origin_address: userAddress,
               destination_address: destinationAddress,
-              origin_latitude: userLatitude,
-              origin_longitude: userLongitude,
-              destination_latitude: destinationLatitude,
-              destination_longitude: destinationLongitude,
-              ride_time: rideTime.toFixed(0),
-              fare_price: parseInt(amount) * 100,
+              fare_price: parseFloat(String(amount)),
               driver_id: driverId,
-              user_id: userId,
-              status: "paid", // Set status to paid after successful payment
-            }),
-          });
-          setSuccess(true);
+              razorpay_payment_id: razorpay_payment_id,
+            });
+            setSuccess(true);
+          } catch (error) {
+            console.error("Error processing ride:", error);
+            Alert.alert("Error", "Failed to process ride. Please try again.");
+          }
         } else {
           Alert.alert("Payment Failed", "Payment verification failed.");
         }

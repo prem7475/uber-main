@@ -17,9 +17,42 @@ import GoogleTextInput from "@/components/GoogleTextInput";
 import Map from "@/components/Map";
 import RideCard from "@/components/RideCard";
 import { icons, images } from "@/constants";
-import { useFetch } from "@/lib/fetch";
 import { useLocationStore } from "@/store";
 import { Ride } from "@/types/type";
+
+// Mock recent rides - no backend to fetch from
+const MOCK_RECENT_RIDES: Ride[] = [
+  {
+    id: "1",
+    origin_address: "123 Main St, New York, NY",
+    destination_address: "456 Park Ave, New York, NY",
+    origin_latitude: 40.7128,
+    origin_longitude: -74.0060,
+    destination_latitude: 40.7350,
+    destination_longitude: -74.0100,
+    ride_time: 25,
+    fare_price: 25.50,
+    payment_status: "paid",
+    driver_id: "1",
+    user_id: "user1",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "2",
+    origin_address: "789 Broadway, New York, NY",
+    destination_address: "321 5th Ave, New York, NY",
+    origin_latitude: 40.7450,
+    origin_longitude: -74.0080,
+    destination_latitude: 40.7550,
+    destination_longitude: -74.0120,
+    ride_time: 18,
+    fare_price: 18.75,
+    payment_status: "paid",
+    driver_id: "2",
+    user_id: "user1",
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
 
 const Home = () => {
   const { user } = useUser();
@@ -27,18 +60,14 @@ const Home = () => {
 
   const { setUserLocation, setDestinationLocation } = useLocationStore();
 
+  const [recentRides, setRecentRides] = useState<Ride[]>(MOCK_RECENT_RIDES);
+  const [loading, setLoading] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+
   const handleSignOut = () => {
     signOut();
     router.replace("/(auth)/sign-in");
   };
-
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
-
-  const {
-    data: recentRides,
-    loading,
-    error,
-  } = useFetch<Ride[]>(`/(api)/ride/${user?.id}`);
 
   useEffect(() => {
     (async () => {

@@ -1,8 +1,6 @@
 import * as Linking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
 
-import { fetchAPI } from "@/lib/fetch";
-
 export const tokenCache = {
   async getToken(key: string) {
     try {
@@ -39,13 +37,11 @@ export const googleOAuth = async (startOAuthFlow: any) => {
         await setActive({ session: createdSessionId });
 
         if (signUp.createdUserId) {
-          await fetchAPI("/(api)/user", {
-            method: "POST",
-            body: JSON.stringify({
-              name: `${signUp.firstName} ${signUp.lastName}`,
-              email: signUp.emailAddress,
-              clerkId: signUp.createdUserId,
-            }),
+          // Backend removed - user data not persisted to database
+          console.log("User created via OAuth:", {
+            name: `${signUp.firstName} ${signUp.lastName}`,
+            email: signUp.emailAddress,
+            clerkId: signUp.createdUserId,
           });
         }
 

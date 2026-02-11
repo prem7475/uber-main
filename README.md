@@ -43,10 +43,19 @@ like these step-by-step in a beginner-friendly manner!
 
 ## <a name="introduction">🤖 Introduction</a>
 
-Built with React Native for handling the user interface, Google Maps for rendering maps with directions, stripe for
-handling payments, serverless Postgres for managing databases, and styled with TailwindCSS, Uber Clone is a perfect
-mobile app. The primary goal is to demonstrate how to develop full-stack mobile applications to showcase the developer's
-skills in a unique manner that creates a lasting impact.
+Full-Stack Uber Clone is a complete, production-ready ride-sharing application built with React Native, Expo, Node.js, and PostgreSQL. It demonstrates a real-world full-stack application with user authentication, real-time location tracking, payment processing, and driver management. Perfect for learning modern mobile development or as a template for ride-sharing applications.
+
+**Key Capabilities:**
+- ✅ Complete user & driver authentication system
+- ✅ Real-time driver discovery and matching
+- ✅ Live GPS tracking with Google Maps integration
+- ✅ Automated fare calculation
+- ✅ Secure payment processing (Razorpay)
+- ✅ Ride history and analytics
+- ✅ Rating and review system
+- ✅ Fully responsive design (Web, iOS, Android)
+- ✅ TypeScript for type safety
+- ✅ Production-ready error handling
 
 If you're getting started and need assistance or face any bugs, join our active Discord community with over **34k+**
 members. It's a place where people help each other out.

@@ -4,7 +4,6 @@ import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 
 import { icons } from "@/constants";
-import { useFetch } from "@/lib/fetch";
 import {
   calculateDriverTimes,
   calculateRegion,
@@ -15,6 +14,55 @@ import { Driver, MarkerData } from "@/types/type";
 
 const directionsAPI = process.env.EXPO_PUBLIC_DIRECTIONS_API_KEY;
 
+// Mock drivers data - no backend to fetch from
+const MOCK_DRIVERS: Driver[] = [
+  {
+    id: "1",
+    first_name: "James",
+    last_name: "Wilson",
+    email: "james@example.com",
+    profile_image_url: "https://i.pravatar.cc/150?img=1",
+    car_seats: 4,
+    car_model: "Toyota Camry",
+    car_year: 2022,
+    car_color: "Silver",
+    car_image_url: "https://via.placeholder.com/150?text=Camry",
+    rating: 4.8,
+    latitude: 40.7128,
+    longitude: -74.0060,
+  },
+  {
+    id: "2",
+    first_name: "Sarah",
+    last_name: "Johnson",
+    email: "sarah@example.com",
+    profile_image_url: "https://i.pravatar.cc/150?img=2",
+    car_seats: 4,
+    car_model: "Honda Accord",
+    car_year: 2023,
+    car_color: "Black",
+    car_image_url: "https://via.placeholder.com/150?text=Accord",
+    rating: 4.9,
+    latitude: 40.7250,
+    longitude: -74.0100,
+  },
+  {
+    id: "3",
+    first_name: "Mike",
+    last_name: "Taylor",
+    email: "mike@example.com",
+    profile_image_url: "https://i.pravatar.cc/150?img=3",
+    car_seats: 5,
+    car_model: "Tesla Model 3",
+    car_year: 2023,
+    car_color: "White",
+    car_image_url: "https://via.placeholder.com/150?text=Tesla",
+    rating: 4.7,
+    latitude: 40.7050,
+    longitude: -74.0150,
+  },
+];
+
 const Map = () => {
   const {
     userLongitude,
@@ -24,7 +72,8 @@ const Map = () => {
   } = useLocationStore();
   const { selectedDriver, setDrivers } = useDriverStore();
 
-  const { data: drivers, loading, error } = useFetch<Driver[]>("/(api)/driver");
+  const [drivers, setLocalDrivers] = useState<Driver[]>(MOCK_DRIVERS);
+  const [loading, setLoading] = useState(false);
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   useEffect(() => {
