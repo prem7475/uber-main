@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useStripe } from "@stripe/stripe-react-native";
+import RazorpayCheckout from 'react-native-razorpay';
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Image, Text, View } from "react-native";
@@ -18,7 +18,6 @@ const Payment = ({
   driverId,
   rideTime,
 }: PaymentProps) => {
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const {
     userAddress,
     userLongitude,
@@ -31,95 +30,117 @@ const Payment = ({
   const { userId } = useAuth();
   const [success, setSuccess] = useState<boolean>(false);
 
-  const openPaymentSheet = async () => {
-    await initializePaymentSheet();
+  const createRazorpayOrder = async () => {
+    try {
+      const response = await fetchAPI("/(api)/(razorpay)/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: amount,
+          currency: "INR", // Assuming INR, change if needed
+        }),
+      });
 
-    const { error } = await presentPaymentSheet();
-
-    if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
-    } else {
-      setSuccess(true);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      return response.order;
+    } catch (error) {
+      console.error("Error creating Razorpay order:", error);
+      Alert.alert("Payment Error", "Could not create payment order.");
+      return null;
     }
   };
 
-  const initializePaymentSheet = async () => {
-    const { error } = await initPaymentSheet({
-      merchantDisplayName: "Example, Inc.",
-      intentConfiguration: {
-        mode: {
-          amount: parseInt(amount) * 100,
-          currencyCode: "usd",
+  const verifyRazorpayPayment = async (
+    razorpay_payment_id: string,
+    razorpay_order_id: string,
+    razorpay_signature: string,
+  ) => {
+    try {
+      const response = await fetchAPI("/(api)/(razorpay)/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        confirmHandler: async (
-          paymentMethod,
-          shouldSavePaymentMethod,
-          intentCreationCallback,
-        ) => {
-          const { paymentIntent, customer } = await fetchAPI(
-            "/(api)/(stripe)/create",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                name: fullName || email.split("@")[0],
-                email: email,
-                amount: amount,
-                paymentMethodId: paymentMethod.id,
-              }),
-            },
-          );
+        body: JSON.stringify({
+          razorpay_payment_id,
+          razorpay_order_id,
+          razorpay_signature,
+        }),
+      });
 
-          if (paymentIntent.client_secret) {
-            const { result } = await fetchAPI("/(api)/(stripe)/pay", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                payment_method_id: paymentMethod.id,
-                payment_intent_id: paymentIntent.id,
-                customer_id: customer,
-                client_secret: paymentIntent.client_secret,
-              }),
-            });
-
-            if (result.client_secret) {
-              await fetchAPI("/(api)/ride/create", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  origin_address: userAddress,
-                  destination_address: destinationAddress,
-                  origin_latitude: userLatitude,
-                  origin_longitude: userLongitude,
-                  destination_latitude: destinationLatitude,
-                  destination_longitude: destinationLongitude,
-                  ride_time: rideTime.toFixed(0),
-                  fare_price: parseInt(amount) * 100,
-                  payment_status: "paid",
-                  driver_id: driverId,
-                  user_id: userId,
-                }),
-              });
-
-              intentCreationCallback({
-                clientSecret: result.client_secret,
-              });
-            }
-          }
-        },
-      },
-      returnURL: "myapp://book-ride",
-    });
-
-    if (!error) {
-      // setLoading(true);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      return response.success;
+    } catch (error) {
+      console.error("Error verifying Razorpay payment:", error);
+      Alert.alert("Payment Error", "Could not verify payment.");
+      return false;
     }
+  };
+
+  const handlePayment = async () => {
+    const order = await createRazorpayOrder();
+    if (!order) return;
+
+    const options = {
+      description: "Ride Payment",
+      image: images.logo, // Assuming you have a logo image in your assets
+      currency: order.currency,
+      key: process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID, // Use environment variable for Razorpay Key ID
+      amount: order.amount,
+      name: "Uber Clone",
+      order_id: order.id,
+      prefill: {
+        email: email,
+        contact: "", // Optional: prefill user contact number
+        name: fullName,
+      },
+      theme: { color: "#F37254" },
+    };
+
+    RazorpayCheckout.open(options)
+      .then(async (data: any) => {
+        const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = data;
+        const isVerified = await verifyRazorpayPayment(
+          razorpay_payment_id,
+          razorpay_order_id,
+          razorpay_signature,
+        );
+
+        if (isVerified) {
+          await fetchAPI("/(api)/ride/create", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              origin_address: userAddress,
+              destination_address: destinationAddress,
+              origin_latitude: userLatitude,
+              origin_longitude: userLongitude,
+              destination_latitude: destinationLatitude,
+              destination_longitude: destinationLongitude,
+              ride_time: rideTime.toFixed(0),
+              fare_price: parseInt(amount) * 100,
+              driver_id: driverId,
+              user_id: userId,
+              status: "paid", // Set status to paid after successful payment
+            }),
+          });
+          setSuccess(true);
+        } else {
+          Alert.alert("Payment Failed", "Payment verification failed.");
+        }
+      })
+      .catch((error: any) => {
+        Alert.alert("Payment Failed", error.description || "Something went wrong.");
+        console.error("Razorpay Error:", error);
+      });
   };
 
   return (
@@ -127,7 +148,7 @@ const Payment = ({
       <CustomButton
         title="Confirm Ride"
         className="my-10"
-        onPress={openPaymentSheet}
+        onPress={handlePayment}
       />
 
       <ReactNativeModal
