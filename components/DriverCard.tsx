@@ -13,56 +13,84 @@ const DriverCard = ({ item, selected, setSelected }: DriverCardProps) => {
   return (
     <TouchableOpacity
       onPress={setSelected}
-      className={`${
-        selected === item.id ? "bg-general-600" : "bg-white"
-      } flex flex-row items-center justify-between py-5 px-3 rounded-xl mb-2`}
+      className={`rounded-3xl mb-4 overflow-hidden transition-all ${
+        selected === item.id ? "bg-black" : "bg-white border border-gray-200"
+      }`}
+      style={{
+        shadowColor: selected === item.id ? "#000" : "transparent",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: selected === item.id ? 0.15 : 0,
+        shadowRadius: 12,
+        elevation: selected === item.id ? 4 : 1,
+      }}
     >
-      <Image
-        source={{ uri: item.profile_image_url }}
-        className="w-14 h-14 rounded-full"
-      />
+      <View className="flex flex-row items-center p-5 gap-4">
+        {/* Driver Photo */}
+        <Image
+          source={{ uri: item.profile_image_url }}
+          className="w-16 h-16 rounded-full"
+        />
 
-      <View className="flex-1 flex flex-col items-start justify-center mx-3">
-        <View className="flex flex-row items-center justify-start mb-1">
-          <Text className="text-lg font-Jakarta">{driverName}</Text>
+        {/* Driver Info */}
+        <View className="flex-1 flex flex-col justify-center">
+          <View className="flex flex-row items-center justify-start mb-2">
+            <Text className={`text-lg font-JakartaBold ${
+              selected === item.id ? "text-white" : "text-gray-900"
+            }`}>
+              {driverName}
+            </Text>
 
-          <View className="flex flex-row items-center space-x-1 ml-2">
-            <Image source={icons.star} className="w-3.5 h-3.5" />
-            <Text className="text-sm font-Jakarta">{item.rating || 5.0}</Text>
+            <View className="flex flex-row items-center gap-1 ml-3 bg-yellow-50 px-2 py-1 rounded-full">
+              <Text className="text-yellow-600 text-sm font-JakartaBold">
+                ⭐ {item.rating || 5.0}
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View className="flex flex-row items-center justify-start">
-          <View className="flex flex-row items-center">
-            <Image source={icons.dollar} className="w-4 h-4" />
-            <Text className="text-sm font-Jakarta ml-1">
-              ${item.price || "0"}
+          <View className={`flex flex-row items-center justify-start gap-3 text-sm ${
+            selected === item.id ? "text-white" : "text-gray-600"
+          }`}>
+            <View className="flex flex-row items-center gap-1">
+              <Image source={icons.dollar} className="w-4 h-4" tintColor={selected === item.id ? "#fff" : "#6B7280"} />
+              <Text className={`font-JakartaSemiBold ${
+                selected === item.id ? "text-white" : "text-gray-900"
+              }`}>
+                ${item.price || "0"}
+              </Text>
+            </View>
+
+            <View className={`w-1 h-1 rounded-full ${
+              selected === item.id ? "bg-white/40" : "bg-gray-300"
+            }`} />
+
+            <Text className={`font-JakartaRegular ${
+              selected === item.id ? "text-white" : "text-gray-600"
+            }`}>
+              {formatTime(item.time || 0)} away
+            </Text>
+
+            <View className={`w-1 h-1 rounded-full ${
+              selected === item.id ? "bg-white/40" : "bg-gray-300"
+            }`} />
+
+            <Text className={`font-JakartaRegular ${
+              selected === item.id ? "text-white" : "text-gray-600"
+            }`}>
+              {item.car_seats} seats
             </Text>
           </View>
-
-          <Text className="text-sm font-Jakarta text-general-800 mx-1">
-            |
-          </Text>
-
-          <Text className="text-sm font-Jakarta text-general-800">
-            {formatTime(item.time || 0)}
-          </Text>
-
-          <Text className="text-sm font-Jakarta text-general-800 mx-1">
-            |
-          </Text>
-
-          <Text className="text-sm font-Jakarta text-general-800">
-            {item.car_seats} seats
-          </Text>
         </View>
-      </View>
 
-      <Image
-        source={{ uri: item.car_image_url }}
-        className="h-14 w-14"
-        resizeMode="contain"
-      />
+        {/* Car Image */}
+        <Image
+          source={{ uri: item.car_image_url }}
+          className="h-16 w-16"
+          resizeMode="contain"
+          style={{
+            opacity: 0.8,
+          }}
+        />
+      </View>
     </TouchableOpacity>
   );
 };

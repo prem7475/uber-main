@@ -1,23 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
-import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
+import { ActivityIndicator, Text, View, ScrollView, Image } from "react-native";
 
 import { icons } from "@/constants";
-import {
-  calculateDriverTimes,
-  calculateRegion,
-  generateMarkersFromData,
-} from "@/lib/map";
 import { useDriverStore, useLocationStore } from "@/store";
-import { Driver, MarkerData } from "@/types/type";
+import { Driver } from "@/types/type";
 
-const directionsAPI = process.env.EXPO_PUBLIC_DIRECTIONS_API_KEY;
-
-// Mock drivers data - no backend to fetch from
+// Mock drivers data
 const MOCK_DRIVERS: Driver[] = [
   {
-    id: "1",
+    id: 1,
     first_name: "James",
     last_name: "Wilson",
     email: "james@example.com",
@@ -32,7 +23,7 @@ const MOCK_DRIVERS: Driver[] = [
     longitude: -74.0060,
   },
   {
-    id: "2",
+    id: 2,
     first_name: "Sarah",
     last_name: "Johnson",
     email: "sarah@example.com",
@@ -47,7 +38,7 @@ const MOCK_DRIVERS: Driver[] = [
     longitude: -74.0100,
   },
   {
-    id: "3",
+    id: 3,
     first_name: "Mike",
     last_name: "Taylor",
     email: "mike@example.com",
@@ -64,123 +55,120 @@ const MOCK_DRIVERS: Driver[] = [
 ];
 
 const Map = () => {
-  const {
-    userLongitude,
-    userLatitude,
-    destinationLatitude,
-    destinationLongitude,
-  } = useLocationStore();
+  const { userLatitude, userLongitude } = useLocationStore();
   const { selectedDriver, setDrivers } = useDriverStore();
 
-  const [drivers, setLocalDrivers] = useState<Driver[]>(MOCK_DRIVERS);
   const [loading, setLoading] = useState(false);
-  const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   useEffect(() => {
-    if (Array.isArray(drivers)) {
-      if (!userLatitude || !userLongitude) return;
+    setDrivers(MOCK_DRIVERS as any);
+  }, []);
 
-      const newMarkers = generateMarkersFromData({
-        data: drivers,
-        userLatitude,
-        userLongitude,
-      });
-
-      setMarkers(newMarkers);
-    }
-  }, [drivers, userLatitude, userLongitude]);
-
-  useEffect(() => {
-    if (
-      markers.length > 0 &&
-      destinationLatitude !== undefined &&
-      destinationLongitude !== undefined
-    ) {
-      calculateDriverTimes({
-        markers,
-        userLatitude,
-        userLongitude,
-        destinationLatitude,
-        destinationLongitude,
-      }).then((drivers) => {
-        setDrivers(drivers as MarkerData[]);
-      });
-    }
-  }, [markers, destinationLatitude, destinationLongitude]);
-
-  const region = calculateRegion({
-    userLatitude,
-    userLongitude,
-    destinationLatitude,
-    destinationLongitude,
-  });
-
-  if (loading || (!userLatitude && !userLongitude))
+  if (loading || (!userLatitude && !userLongitude)) {
     return (
-      <View className="flex justify-between items-center w-full">
-        <ActivityIndicator size="small" color="#000" />
+      <View className="w-full h-64 bg-gray-100 rounded-3xl flex items-center justify-center">
+        <ActivityIndicator size="large" color="#000" />
       </View>
     );
-
-  if (error)
-    return (
-      <View className="flex justify-between items-center w-full">
-        <Text>Error: {error}</Text>
-      </View>
-    );
+  }
 
   return (
-    <MapView
-      provider={PROVIDER_DEFAULT}
-      className="w-full h-full rounded-2xl"
-      tintColor="black"
-      mapType="mutedStandard"
-      showsPointsOfInterest={false}
-      initialRegion={region}
-      showsUserLocation={true}
-      userInterfaceStyle="light"
-    >
-      {markers.map((marker, index) => (
-        <Marker
-          key={marker.id}
-          coordinate={{
-            latitude: marker.latitude,
-            longitude: marker.longitude,
-          }}
-          title={marker.title}
-          image={
-            selectedDriver === +marker.id ? icons.selectedMarker : icons.marker
-          }
-        />
-      ))}
+    <View className="w-full bg-white rounded-3xl overflow-hidden shadow-md" style={{
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    }}>
+      {/* Map Background */}
+      <View className="w-full h-64 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center relative">
+        {/* Center Marker */}
+        <View className="absolute w-10 h-10 rounded-full bg-black opacity-10" />
+        <View className="absolute w-6 h-6 rounded-full bg-black flex items-center justify-center">
+          <View className="w-2 h-2 rounded-full bg-white" />
+        </View>
 
-      {destinationLatitude && destinationLongitude && (
-        <>
-          <Marker
-            key="destination"
-            coordinate={{
-              latitude: destinationLatitude,
-              longitude: destinationLongitude,
-            }}
-            title="Destination"
-            image={icons.pin}
-          />
-          <MapViewDirections
-            origin={{
-              latitude: userLatitude!,
-              longitude: userLongitude!,
-            }}
-            destination={{
-              latitude: destinationLatitude,
-              longitude: destinationLongitude,
-            }}
-            apikey={directionsAPI!}
-            strokeColor="#0286FF"
-            strokeWidth={2}
-          />
-        </>
-      )}
-    </MapView>
+        {/* Location Info */}
+        <View className="absolute top-4 left-4 bg-white rounded-xl px-3 py-2 shadow-md">
+          <Text className="text-xs font-JakartaRegular text-gray-600">
+            Your Location
+          </Text>
+          <Text className="text-xs font-JakartaBold text-gray-900 mt-0.5">
+            {Math.round(Math.random() * 50)}+ km away
+          </Text>
+        </View>
+
+        {/* Driver Count Badge */}
+        <View className="absolute top-4 right-4 bg-black rounded-xl px-4 py-2 shadow-md">
+          <Text className="text-sm font-JakartaBold text-white">
+            {MOCK_DRIVERS.length} Drivers
+          </Text>
+        </View>
+      </View>
+
+      {/* Drivers List */}
+      <View className="bg-white px-4 py-4 border-t border-gray-100">
+        <View className="flex flex-row items-center justify-between mb-4">
+          <Text className="text-base font-JakartaBold text-gray-900">
+            Available Near You
+          </Text>
+          <Text className="text-xs font-JakartaRegular text-gray-500">
+            See all
+          </Text>
+        </View>
+
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingRight: 16 }}
+        >
+          {MOCK_DRIVERS.map((driver) => (
+            <View
+              key={driver.id}
+              className={`mr-3 rounded-2xl p-4 border-2 w-40 ${
+                selectedDriver === +driver.id
+                  ? "border-black bg-black/5"
+                  : "border-gray-200 bg-white"
+              }`}
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: selectedDriver === +driver.id ? 0.1 : 0.05,
+                shadowRadius: 4,
+                elevation: selectedDriver === +driver.id ? 2 : 1,
+              }}
+            >
+              {/* Driver Image */}
+              <Image
+                source={{ uri: driver.profile_image_url }}
+                className="w-12 h-12 rounded-full mb-3"
+              />
+
+              {/* Driver Info */}
+              <Text className="text-sm font-JakartaBold text-gray-900 mb-1">
+                {driver.first_name}
+              </Text>
+              <Text className="text-xs font-JakartaRegular text-gray-600 mb-3">
+                {driver.car_model || "Premium"}
+              </Text>
+
+              {/* Rating */}
+              <View className="flex flex-row items-center gap-1">
+                <Text className="text-sm font-JakartaBold text-gray-900">
+                  {driver.rating}
+                </Text>
+                <Text className="text-lg">⭐</Text>
+              </View>
+
+              {/* Seats */}
+              <Text className="text-xs font-JakartaRegular text-gray-600 mt-2">
+                {driver.car_seats || 4} seats available
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
   );
 };
 

@@ -4,10 +4,16 @@ declare interface Driver {
   id: number;
   first_name: string;
   last_name: string;
+  email?: string;
   profile_image_url: string;
   car_image_url: string;
   car_seats: number;
+  car_model?: string;
+  car_year?: number;
+  car_color?: string;
   rating: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 declare interface MarkerData {
@@ -34,6 +40,7 @@ declare interface MapProps {
 }
 
 declare interface Ride {
+  id?: string;
   origin_address: string;
   destination_address: string;
   origin_latitude: number;
@@ -46,7 +53,7 @@ declare interface Ride {
   driver_id: number;
   user_id: string;
   created_at: string;
-  driver: {
+  driver?: {
     first_name: string;
     last_name: string;
     car_seats: number;

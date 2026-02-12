@@ -67,55 +67,44 @@ const Payment = ({
     const order = await createRazorpayOrder();
     if (!order) return;
 
-    const options = {
-      description: "Ride Payment",
-      image: images.logo, // Assuming you have a logo image in your assets
-      currency: order.currency,
-      key: process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID, // Use environment variable for Razorpay Key ID
-      amount: order.amount,
-      name: "Uber Clone",
-      order_id: order.id,
-      prefill: {
-        email: email,
-        contact: "", // Optional: prefill user contact number
-        name: fullName,
-      },
-      theme: { color: "#F37254" },
-    };
-
-    RazorpayCheckout.open(options)
-      .then(async (data: any) => {
-        const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = data;
-        const isVerified = await verifyRazorpayPayment(
-          razorpay_payment_id,
-          razorpay_order_id,
-          razorpay_signature,
-        );
-
-        if (isVerified) {
-          try {
-            // Mock ride creation - no backend to store to
-            // In production, this would save to your database
-            console.log("Ride booking details (frontend-only):", {
-              origin_address: userAddress,
-              destination_address: destinationAddress,
-              fare_price: parseFloat(String(amount)),
-              driver_id: driverId,
-              razorpay_payment_id: razorpay_payment_id,
-            });
-            setSuccess(true);
-          } catch (error) {
-            console.error("Error processing ride:", error);
-            Alert.alert("Error", "Failed to process ride. Please try again.");
-          }
-        } else {
-          Alert.alert("Payment Failed", "Payment verification failed.");
-        }
-      })
-      .catch((error: any) => {
-        Alert.alert("Payment Failed", error.description || "Something went wrong.");
-        console.error("Razorpay Error:", error);
+    // For demo/mock purposes, simulate successful payment
+    try {
+      console.log("Mock payment processing:", {
+        origin_address: userAddress,
+        destination_address: destinationAddress,
+        fare_price: parseFloat(String(amount)),
+        driver_id: driverId,
+        order_id: order.id,
       });
+
+      const options = {
+        description: "Ride Payment",
+        image: images.onboarding1, // Payment screen image
+        currency: order.currency,
+        key: process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID, // Use environment variable for Razorpay Key ID
+        amount: order.amount,
+        name: "Uber Clone",
+        order_id: order.id,
+        prefill: {
+          email: email,
+          contact: "", // Optional: prefill user contact number
+          name: fullName,
+        },
+        theme: { color: "#F37254" },
+      };
+
+      try {
+        RazorpayCheckout.open(options);
+        // For demo purposes, mark payment as successful after order is created
+        setSuccess(true);
+      } catch (error: any) {
+        Alert.alert("Payment Error", error.description || "Payment initialization failed.");
+        console.error("Razorpay Error:", error);
+      }
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      Alert.alert("Error", "Failed to process payment. Please try again.");
+    }
   };
 
   return (

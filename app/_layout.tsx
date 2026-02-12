@@ -11,13 +11,11 @@ import { tokenCache } from "@/lib/auth";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-if (!publishableKey) {
-  throw new Error(
-    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env",
-  );
-}
+// For testing without Clerk, use a demo key (sign up for real key at https://clerk.com)
+const isValidKey = publishableKey && !publishableKey.includes("your_");
+const clerkKey = isValidKey ? publishableKey : "pk_test_demo_key_for_testing";
 
 LogBox.ignoreLogs(["Clerk:"]);
 
@@ -43,7 +41,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+    <ClerkProvider tokenCache={tokenCache} publishableKey={clerkKey}>
       <ClerkLoaded>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />

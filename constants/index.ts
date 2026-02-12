@@ -95,6 +95,50 @@ export const onboarding = [
   },
 ];
 
+// Professional Design System
+export const colors = {
+  primary: "#000000", // Black - Uber style
+  secondary: "#F37254", // Coral - Accent color
+  tertiary: "#FCF3F1", // Light coral background
+  success: "#10B981", // Green
+  warning: "#F59E0B", // Amber
+  danger: "#EF4444", // Red
+  info: "#3B82F6", // Blue
+  lightGray: "#F3F4F6",
+  mediumGray: "#D1D5DB",
+  darkGray: "#6B7280",
+  white: "#FFFFFF",
+  black: "#000000",
+};
+
+export const shadows = {
+  none: "0 0 0 rgba(0,0,0,0)",
+  sm: "0 1px 2px rgba(0,0,0,0.05)",
+  base: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+  md: "0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06)",
+  lg: "0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05)",
+  xl: "0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04)",
+};
+
+export const borderRadius = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  full: 9999,
+};
+
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  "2xl": 24,
+  "3xl": 32,
+};
+
 export const data = {
   onboarding,
 };
