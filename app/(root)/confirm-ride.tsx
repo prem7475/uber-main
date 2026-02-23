@@ -11,7 +11,7 @@ const ConfirmRide = () => {
   const { drivers, selectedDriver, setSelectedDriver } = useDriverStore();
   const [scaleAnim] = useState(new Animated.Value(1));
 
-  const handleSelectDriver = (driverId: string) => {
+  const handleSelectDriver = (driverId: number) => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 0.95,

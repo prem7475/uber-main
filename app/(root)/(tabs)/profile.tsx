@@ -156,17 +156,18 @@ const Profile = () => {
           </Text>
 
           {/* Payment Methods Card */}
-          <TouchableOpacity 
+          <TouchableOpacity
             activeOpacity={0.85}
+            onPress={() => router.push("/(root)/wallet" as any)}
             className="bg-gradient-to-br from-indigo-50 via-indigo-100 to-indigo-200 rounded-3xl p-6 mb-4 shadow-lg border-2 border-indigo-300 active:opacity-90"
           >
             <View className="flex flex-row items-center justify-between">
               <View className="flex-1">
                 <Text className="font-JakartaBold text-indigo-900 text-base mb-1">
-                  💳 Payment Methods
+                  💳 Wallet & Payment
                 </Text>
                 <Text className="font-JakartaRegular text-indigo-700 text-sm">
-                  Add or manage payment options
+                  Manage payment methods & balance
                 </Text>
               </View>
               <Text className="text-2xl">→</Text>
@@ -174,24 +175,25 @@ const Profile = () => {
           </TouchableOpacity>
 
           {/* Credits Card */}
-          <TouchableOpacity 
+          <TouchableOpacity
             activeOpacity={0.85}
+            onPress={() => router.push("/(root)/promo-codes" as any)}
             className="bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 rounded-3xl p-6 shadow-lg border-2 border-orange-600 active:opacity-90"
           >
             <View className="flex flex-row items-center justify-between">
               <View className="flex-1">
                 <Text className="font-JakartaBold text-white text-base mb-2">
-                  🎁 Rider Credits
+                  🎟️ Promo Codes
                 </Text>
                 <Text className="text-white text-3xl font-JakartaBold mb-1">
-                  $45.00
+                  4 Active
                 </Text>
                 <Text className="font-JakartaRegular text-white text-xs opacity-90">
-                  ✓ Valid for 30 more days
+                  ✓ Save on your next ride
                 </Text>
               </View>
               <View className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
-                <Text className="text-white text-xl">🎉</Text>
+                <Text className="text-white text-xl">📌</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -204,7 +206,19 @@ const Profile = () => {
           </Text>
 
           <View className="space-y-3">
-            <TouchableOpacity 
+            <TouchableOpacity
+              onPress={() => router.push("/(root)/drivers" as any)}
+              activeOpacity={0.8}
+              className="bg-white border-2 border-gray-200 rounded-3xl p-4 flex flex-row items-center justify-between active:border-gray-400"
+            >
+              <Text className="font-JakartaSemiBold text-gray-800 text-base">
+                🚗 Become a Driver
+              </Text>
+              <Text className="text-gray-400 text-lg">→</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push("/(root)/settings" as any)}
               activeOpacity={0.8}
               className="bg-white border-2 border-gray-200 rounded-3xl p-4 flex flex-row items-center justify-between active:border-gray-400"
             >
@@ -214,7 +228,8 @@ const Profile = () => {
               <Text className="text-gray-400 text-lg">→</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
+              onPress={() => router.push("/(root)/help-support" as any)}
               activeOpacity={0.8}
               className="bg-white border-2 border-gray-200 rounded-3xl p-4 flex flex-row items-center justify-between active:border-gray-400"
             >
@@ -224,7 +239,7 @@ const Profile = () => {
               <Text className="text-gray-400 text-lg">→</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               activeOpacity={0.8}
               className="bg-white border-2 border-gray-200 rounded-3xl p-4 flex flex-row items-center justify-between active:border-gray-400"
             >

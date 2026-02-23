@@ -65,7 +65,7 @@ const FindRide = () => {
           {userAddress && (
             <View className="mt-4 bg-white/60 backdrop-blur rounded-2xl px-4 py-3 border border-green-200">
               <Text className="text-xs font-JakartaRegular text-green-900">
-                ✓ {userAddress.address.substring(0, 40)}...
+                ✓ {typeof userAddress === "string" ? userAddress.substring(0, 40) : userAddress}...
               </Text>
             </View>
           )}
@@ -105,7 +105,7 @@ const FindRide = () => {
           {destinationAddress && (
             <View className="mt-4 bg-white/60 backdrop-blur rounded-2xl px-4 py-3 border border-red-200">
               <Text className="text-xs font-JakartaRegular text-red-900">
-                ✓ {destinationAddress.address.substring(0, 40)}...
+                ✓ {typeof destinationAddress === "string" ? destinationAddress.substring(0, 40) : destinationAddress}...
               </Text>
             </View>
           )}

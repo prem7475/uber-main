@@ -132,7 +132,7 @@ const BookRide = () => {
                   Pickup Location
                 </Text>
                 <Text className="text-base font-JakartaBold text-black">
-                  {userAddress?.address}
+                  {typeof userAddress === "string" ? userAddress : userAddress}
                 </Text>
               </View>
             </View>
@@ -147,7 +147,7 @@ const BookRide = () => {
                   Destination
                 </Text>
                 <Text className="text-base font-JakartaBold text-black">
-                  {destinationAddress?.address}
+                  {typeof destinationAddress === "string" ? destinationAddress : destinationAddress}
                 </Text>
               </View>
             </View>
